@@ -1,6 +1,6 @@
 # Clinical AI Deployment Threshold
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21965903.svg)](https://doi.org/10.5281/zenodo.21965903)
 
 Replication materials for:
 
