@@ -177,7 +177,8 @@ AI:
 - Mikkelsen Y. Clinical Context Variables Collectively Rival Model Choice in
   Embedding-Based Retrieval. *JMIR Med Inform.* 2026;14:e94241.
   [Repository](https://github.com/yngvemikkelsen/clinical-rag-retrieval-benchmark)
-- Mikkelsen Y. *JMIR Med Inform.* 2026;14:e99639.
+- Mikkelsen Y. Effects of Model Choice, Corpus Context, and Post Hoc Correction on Layer-Level Embedding Degradation in Clinical Document Retrieval: Experimental Study. *JMIR Med Inform.* 2026;14:e99639.
+  [Repository] (https://github.com/yngvemikkelsen/clinical-embedding-layer-analysis)
 
 ## License
 
