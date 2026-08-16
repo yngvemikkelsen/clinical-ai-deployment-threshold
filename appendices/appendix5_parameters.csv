@@ -1,0 +1,18 @@
+Symbol,Definition,Base value,Distribution or range,Units,Source,Status,Enters
+d_ben,"Mean dMRR@10, benefited subgroup",+0.0627,per-condition SD 0.0465,unitless,"Companion study, full-corpus protocol at eps=1e-5",empirical,technical effect
+d_harm,"Mean dMRR@10, harmed subgroup",-0.0867,per-condition SD 0.0465,unitless,"Companion study, full-corpus protocol at eps=1e-5",empirical,technical effect
+p,Affected-subgroup prevalence,partially identified,0.036-1.000 (no assumptions),proportion,55-system extraction frame; Appendix 1,partially identified,technical effect
+se,Screen sensitivity,derived,by n scored conditions/documents,proportion,"Between-condition variability; resampling, Appendix 3",empirical,technical effect
+sp,Screen specificity,derived,by n scored conditions/documents,proportion,"Between-condition variability; resampling, Appendix 3",empirical,technical effect
+alpha,Technical metric to decision accuracy,0.70,"TruncN(0.70, 0.15)",unitless,No published source,ILLUSTRATIVE,enters M
+adoption,Retrieval output adopted into decision,0.60,"Beta(9, 6)",proportion,No published source,ILLUSTRATIVE,enters M
+p_event,Adverse event | adopted erroneous retrieval,0.12,"Beta(6, 44)",proportion,No published source,ILLUSTRATIVE,enters M
+C_event,Treatment cost per adverse event,"EUR 11,422","Gamma(2.5, 4569)",EUR,"SAMDATA 2024 bed-day NOK 26,153 x 5.11 excess days (Hoogervorst-Schilp 2015). Reported without reconciliation to the European estimates of Durand 2024 and Laroche 2025, which the Norwegian unit cost exceeds",empirical,enters M via V
+Q_event,Utility loss per adverse event,0.0015 QALY,"Gamma(1.5, 0.001); 0.028 alternative",QALY,Disutility 0.09-0.145 applied over the 5.11-day excess stay; Kirwan 2023 alternative,scenario,enters M via V
+lambda,Willingness to pay,"NOK 275,000","to NOK 825,000 severity-weighted",NOK/QALY,Meld. St. 34 (2015-2016),empirical,enters M via V
+N,Annual retrievals,"133,000",fixed,count,"approximately 1/20 of 2,656,857 Norwegian somatic specialist patients (2024, Statistics Norway)",empirical,enters M
+D,"Discount factor, 5 years at 4%",4.4518,fixed,unitless,Standard,empirical,enters M
+K_impl,Implementation cost,EUR 800,"Gamma(2, 400)",EUR,Scenario,scenario,enters K
+K_annual,Annual maintenance,EUR 150,"Gamma(1.5, 100)",EUR,Scenario,scenario,enters K
+K_screen,Screening cost per condition,EUR 400 x n_cond,"Gamma(2, 200 x n_cond)",EUR,Scenario,scenario,enters K
+epsilon,ZCA regularisation,1e-5,1e-7 to 1e-2 swept,unitless,Companion study default,empirical,technical effect

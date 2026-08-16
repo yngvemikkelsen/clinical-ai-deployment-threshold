@@ -1,0 +1,50 @@
+Multimedia Appendix 1 - coding definitions
+=========================================
+
+Scope of these codings
+  Every coding in this frame is MECHANISTIC: it records an
+  implementation characteristic expected to correspond to the
+  response-defined subgroup of the decision model, not a measured
+  response to the intervention. No system in the frame was evaluated
+  under the intervention. The counts here therefore support proxy-based
+  partial identification under stated classification assumptions; they
+  do not bound response-defined prevalence, which is unidentified
+  without such an assumption.
+
+Mechanistic affected criterion
+  A system is coded as meeting the hypothesised affected mechanism
+  only where BOTH hold:
+   (a) the representation actually used for retrieval can be
+       established from the primary article, and
+   (b) that representation was not shown to have been calibrated by
+       the model's training objective.
+  Systems whose extraction step cannot be established from the primary
+  article are coded UNKNOWN, not unaffected. One of 55 systems meets
+  this mechanistic criterion. No system in the frame was evaluated
+  under the intervention, so the count does not bound response-defined
+  prevalence. It enters the analysis only under explicit
+  classification assumptions and, separately, as a labelled
+  stress-test value.
+
+Reported pooling
+  None of the 55 systems reports a retrieval pooling strategy as such.
+  One (A50) reports enough implementation detail elsewhere in its
+  methods to infer the extraction step; the inference, its basis, and
+  the primary-source location are given in their own columns.
+
+Coding stability
+  A50 is Tier 2 in the core, expanded and adversarial frames. The
+  source workbook additionally flagged it ambiguous under the ORIGINAL
+  rationale (no similarity-tuned checkpoint identified), which the
+  manuscript establishes is invalid: citing the base-model paper does
+  not establish the absence of a similarity-tuned checkpoint. Under
+  the extracted-representation basis the coding is not ambiguous.
+  Both the
+  superseded rationale and the current basis are recorded so the
+  change is auditable.
+
+Interface class
+  commercial interface        pooling vendor-fixed, geometry undisclosed
+  self-hosted checkpoint      checkpoint identified and inspectable
+  checkpoint unspecified      no identifiable checkpoint named
+  not a pooled dense retriever  corpus-only whitening is undefined

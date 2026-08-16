@@ -1,0 +1,27 @@
+Query format,Configuration,Nominal tier,baseline_MRR10 gpt4o,baseline_MRR10 local,delta_MRR10 gpt4o,delta_MRR10 local,dMRR difference (local - published),rank gpt4o,subgroup gpt4o,rank local,subgroup local,assignment agrees
+keyword,BERT-base-uncased,2,0.2381,0.222,0.1025,0.0459,-0.0566,3,benefited,5,benefited,yes
+keyword,BGE-base,1,0.9242,0.9227,-0.0324,-0.0293,0.003,10,harmed,10,harmed,yes
+keyword,BioBERT,2,0.429,0.2918,0.0992,0.1271,0.0279,5,benefited,2,benefited,yes
+keyword,BioLORD-2023,1,0.8156,0.7846,-0.0298,-0.0193,0.0105,8,harmed,9,harmed,yes
+keyword,BioMistral-7B,2,0.3433,0.3762,0.2403,0.1709,-0.0694,1,benefited,1,benefited,yes
+keyword,ClinicalBERT,2,0.4681,0.3981,-0.0316,-0.04,-0.0084,9,harmed,11,harmed,yes
+keyword,E5-Mistral-7B,2,0.111,0.1463,0.1173,0.1144,-0.0029,2,benefited,4,benefited,yes
+keyword,E5-Mistral-7B-ablation,2,0.7438,0.7194,0.0003,-0.007,-0.0073,6,benefited,6,harmed,no
+keyword,GTE-base,1,0.9318,0.9298,-0.0424,-0.0123,0.0302,11,harmed,8,harmed,yes
+keyword,MedCPT,1,0.8808,0.8624,-0.0709,-0.0966,-0.0257,13,harmed,13,harmed,yes
+keyword,Nomic-embed-text,1,0.9203,0.9319,-0.0432,-0.0618,-0.0186,12,harmed,12,harmed,yes
+keyword,Nomic-embed-text-nopfx,1,0.9061,0.9014,-0.021,-0.0091,0.0119,7,harmed,7,harmed,yes
+keyword,Phi-3-mini,2,0.5478,0.4886,0.1015,0.1251,0.0236,4,benefited,3,benefited,yes
+nl,BERT-base-uncased,2,0.2089,0.2138,0.1683,0.1372,-0.0311,4,benefited,6,benefited,yes
+nl,BGE-base,1,0.9292,0.935,-0.0312,-0.0131,0.0182,9,harmed,8,harmed,yes
+nl,BioBERT,2,0.3439,0.3022,0.2786,0.2655,-0.0131,1,benefited,1,benefited,yes
+nl,BioLORD-2023,1,0.8808,0.925,-0.0418,-0.0522,-0.0104,12,harmed,11,harmed,yes
+nl,BioMistral-7B,2,0.4763,0.4342,0.0774,0.1341,0.0567,7,benefited,7,benefited,yes
+nl,ClinicalBERT,2,0.3286,0.2954,0.2175,0.163,-0.0545,2,benefited,4,benefited,yes
+nl,E5-Mistral-7B,2,0.0905,0.1005,0.1407,0.1458,0.0051,6,benefited,5,benefited,yes
+nl,E5-Mistral-7B-ablation,2,0.5861,0.6263,0.2162,0.2046,-0.0117,3,benefited,2,benefited,yes
+nl,GTE-base,1,0.9395,0.9608,-0.0394,-0.0322,0.0072,11,harmed,9,harmed,yes
+nl,MedCPT,1,0.8036,0.8653,-0.0531,-0.0905,-0.0374,13,harmed,13,harmed,yes
+nl,Nomic-embed-text,1,0.9367,0.9275,-0.033,-0.0667,-0.0338,10,harmed,12,harmed,yes
+nl,Nomic-embed-text-nopfx,1,0.9381,0.9417,-0.0254,-0.0365,-0.0111,8,harmed,10,harmed,yes
+nl,Phi-3-mini,2,0.5459,0.5035,0.1427,0.1947,0.052,5,benefited,3,benefited,yes
