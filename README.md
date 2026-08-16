@@ -1,5 +1,7 @@
 # Clinical AI Deployment Threshold
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+
 Replication materials for:
 
 **Mikkelsen Y. Deployment-Specific Benefit and Harm in Clinical Artificial
@@ -81,9 +83,12 @@ resampling counts, and threshold derivations. Sampled note text, generated
 queries derived from those notes, and document embeddings are **not** included,
 as all three are derivative of credentialed data.
 
-The benchmark corpora and their published queries come from the companion study
-and are available in its own repository
-(github.com/yngvemikkelsen/clinical-rag-retrieval-benchmark).
+Two files in `results/` are outputs of the companion study rather than of this
+one, reproduced here so the screening derivation can be run without a second
+download: `epsilon_sensitivity.parquet` (regularisation sweep, per-condition
+effect estimates) and `cross_validation.parquet` (cross-validated protocol
+output). Both originate in Mikkelsen Y, *JMIR Med Inform* 2026;14:e99639
+(doi:10.2196/99639). 
 
 ## Reproducing key results
 
