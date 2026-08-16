@@ -1,0 +1,16 @@
+# credentialed-access derivatives: never commit
+expA_corpora/
+expA_queries/
+expA_emb/
+embeddings/
+csn_raw/
+models/*.pth
+*.npy
+*_variants.csv
+*_queries_*.csv
+
+# scratch
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
