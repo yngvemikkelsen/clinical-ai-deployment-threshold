@@ -23,17 +23,18 @@ analysis code behind three claims:
 1. **A deployment threshold.** An intervention with sign-changing effects is
    beneficial across a setting only where affected-subgroup prevalence exceeds
    p\* = (|d_harm| + K/M) / (d_ben + |d_harm|). Empirically K/M = 4.3 × 10⁻⁶, so
-   the threshold is indistinguishable from its zero-cost limit of 0.5805.
+   the threshold is indistinguishable from its zero-cost limit. Groups are defined
+   by measured response, giving p* = 0.50.
 
-2. **Published evidence cannot establish whether the condition is met.** No
+3. **Published evidence cannot establish whether the condition is met.** No
    system in a 55-system extraction frame had been evaluated under the
    intervention, so the affected fraction is identified only under explicit
    classification assumptions. Under no assumption the bound is the trivial
    interval 0–1.
 
-3. **Local screening has two independent requirements.** Cross-condition
+4. **Local screening has two independent requirements.** Cross-condition
    evidence breadth sets the prevalence a site must be able to assert, falling
-   from 0.217 at one scored condition to 0.007 at six. Within-site sample size
+   from 0.210 at one scored condition to 0.071 at six. Within-site sample size
    sets whether the screen is reliable at all: specificity was 0.328 at ten
    documents, so a site more often concludes that a harmed system benefits.
 
