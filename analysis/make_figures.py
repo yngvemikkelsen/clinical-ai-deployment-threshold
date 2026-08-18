@@ -34,11 +34,14 @@ INK, MID, PALE = "#1a1a1a", "#6b6b6b", "#d9d9d9"
 
 
 def save(fig, name):
-    for ext in ("png", "pdf"):
-        fig.savefig(OUT / f"{name}.{ext}", bbox_inches="tight",
-                    facecolor="white")
+    # JMIR asks for figures as separate files at high resolution. PNG at 600
+    # dpi meets that; the PDF is kept as the vector original for typesetting.
+    fig.savefig(OUT / f"{name}.png", bbox_inches="tight",
+                facecolor="white", dpi=600)
+    fig.savefig(OUT / f"{name}.pdf", bbox_inches="tight",
+                facecolor="white")
     plt.close(fig)
-    print(f"  {name}.png / .pdf")
+    print(f"  {name}.png (600 dpi) / .pdf")
 
 
 # ------------------------------------------------------------------ Figure 1
@@ -129,19 +132,28 @@ def figure1():
 
 # ------------------------------------------------------------------ Figure 2
 def figure2():
-    heldout = pd.read_csv("expA_curve_heldout.csv")
-    heldout = heldout[heldout.n_cond <= 6]
-    ext = {1: 0.1244, 2: 0.0552, 3: 0.0261, 4: 0.0128, 5: 0.0065, 6: 0.0033}
+    # response-defined regrouping (v33). se/sp and requirements recomputed;
+    # the nominal-tier curve is superseded and must not be plotted.
+    heldout = pd.DataFrame({"n_cond":[1,2,3,4,5,6],
+        "se":[0.687,0.742,0.777,0.804,0.825,0.843],
+        "sp":[0.819,0.885,0.912,0.925,0.932,0.936],
+        "p_screen_star":[0.2101,0.1359,0.1025,0.0858,0.0767,0.0712]})
+    DB, DH = 0.075745, -0.076593
+    ext = {int(r.n_cond): ((1-r.sp)*abs(DH))/(r.se*0.1419 + (1-r.sp)*abs(DH))
+           for r in heldout.itertuples()}
     boot = pd.read_csv("appendices/appendix3_screen_resampling.csv")
-    pooled = boot.groupby(["Nominal tier", "Documents sampled"])[
+    # Appendix 3 now labels rows by what they contribute to, since the reference
+    # sign is the measured full-sample effect rather than the nominal tier.
+    boot["_grp"] = np.where(boot["contributes to"] == "specificity", 1, 2)
+    pooled = boot.groupby(["_grp", "Documents sampled"])[
         "Agreement rate"].mean().unstack(0)
     req = {10: 0.4091, 20: 0.2631, 30: 0.1888, 50: 0.0915, 75: 0.0185}
 
     fig, (a, b) = plt.subplots(1, 2, figsize=(7.2, 3.3))
 
     # -- Panel A
-    a.axhline(0.5805, color=INK, linewidth=1.0, linestyle="--", zorder=1)
-    a.text(6.0, 0.5805 * 1.13, "universal deployment  p* = 0.5805",
+    a.axhline(0.5028, color=INK, linewidth=1.0, linestyle="--", zorder=1)
+    a.text(6.0, 0.5028 * 1.13, "universal deployment  p* = 0.50",
            ha="right", va="bottom", fontsize=7.2, color=INK)
     a.plot(heldout.n_cond, heldout.p_screen_star, "o-", color=INK,
            markersize=4.2, linewidth=1.3, label="derived on benchmark corpora",
@@ -237,7 +249,12 @@ def figure3():
     ax.axhline(n2 - 0.5, color=INK, linewidth=1.6)
     ax.set_xticks(range(4)); ax.set_xticklabels([lab[k] for k in order],
                                                 fontsize=7.4)
-    ax.set_yticks(range(len(rows))); ax.set_yticklabels(rows, fontsize=7.4)
+    ax.set_yticks(range(len(rows)))
+    # E5-Mistral-7B-ablation sits in the nominal benefit tier but is harmed on
+    # the benchmark corpora, which is why nominal agreement is 52/52 while
+    # benchmark-response agreement is 48/52. Mark it so the reader can see it.
+    labels = [r + "  \u2020" if r == "E5-Mistral-7B-ablation" else r for r in rows]
+    ax.set_yticklabels(labels, fontsize=7.4)
     # subgroup brackets outside the tick labels, one per block
     for y0, y1, lab in ((-0.4, n2 - 0.6, "nominal\nbenefit tier"),
                         (n2 - 0.4, len(rows) - 0.6, "nominal\nharm tier")):
@@ -254,6 +271,9 @@ def figure3():
     cb = fig.colorbar(im, ax=ax, shrink=0.72, pad=0.02)
     cb.set_label("ΔMRR@10 after correction", fontsize=7.8)
     cb.ax.tick_params(labelsize=7)
+    ax.text(0.0, -0.13, "\u2020 nominal benefit tier but harmed on the benchmark "
+            "corpora (mean \u22120.016); benchmark-response agreement is 48/52",
+            transform=ax.transAxes, fontsize=7.0, color=MID, va="top")
     fig.tight_layout()
     save(fig, "figure3_response_heatmap")
 

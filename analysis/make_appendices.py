@@ -232,8 +232,7 @@ def appendix1():
         "  this mechanistic criterion. No system in the frame was evaluated\n"
         "  under the intervention, so the count does not bound response-defined\n"
         "  prevalence. It enters the analysis only under explicit\n"
-        "  classification assumptions and, separately, as a labelled\n"
-        "  stress-test value.\n\n"
+        "  classification assumptions.\n\n"
         "Reported pooling\n"
         "  None of the 55 systems reports a retrieval pooling strategy as such.\n"
         "  One (A50) reports enough implementation detail elsewhere in its\n"
@@ -281,6 +280,18 @@ def appendix2():
     d = pd.read_csv(U / "expA_panel_results.csv").drop_duplicates(
         subset=["corpus", "variant", "query_format", "model"])
     d["nominal subgroup"] = np.where(d.tier == 1, "harmed", "benefited")
+    # Benchmark response group: sign of the configuration's mean effect on the
+    # derivation corpora. Differs from nominal tier for E5-Mistral-7B-ablation,
+    # which is why nominal agreement is 52/52 while response agreement is 48/52.
+    BENCH_HARMED = {"BioLORD-2023", "MedCPT", "BGE-base", "GTE-base",
+                    "Nomic-embed-text", "Nomic-embed-text-nopfx",
+                    "E5-Mistral-7B-ablation"}
+    d["benchmark response group"] = np.where(
+        d.model.isin(BENCH_HARMED), "harmed", "benefited")
+    d["agrees with benchmark response group"] = np.where(
+        ((d["benchmark response group"] == "harmed") & (d.delta_MRR10 < 0)) |
+        ((d["benchmark response group"] == "benefited") & (d.delta_MRR10 > 0)),
+        "yes", "no")
     d["measured sign"] = np.where(d.delta_MRR10 < 0, "negative", "positive")
     d["retains assignment"] = np.where(
         ((d.tier == 1) & (d.delta_MRR10 < 0)) |
@@ -306,19 +317,25 @@ def appendix3():
     """Resampling detail behind the pooled screen-accuracy table."""
     d = pd.read_csv(U / "expA_bootstrap.csv")
     d["reference sign"] = np.where(d.delta_full < 0, "negative", "positive")
-    d["contributes to"] = np.where(d.tier == 1, "specificity", "sensitivity")
+    # The reference sign is the configuration's FULL-SAMPLE measured effect on
+    # that corpus, i.e. response-defined for that corpus. For these two corpora
+    # it coincides with nominal tier in all 13 configurations, so the two
+    # labellings give identical sensitivity/specificity assignments here.
+    d["contributes to"] = np.where(d.delta_full < 0, "specificity", "sensitivity")
+    d["reference basis"] = "sign of full-sample measured effect on this corpus"
     d = d.rename(columns={
-        "corpus": "Corpus", "model": "Configuration", "tier": "Nominal tier",
+        "corpus": "Corpus", "model": "Configuration",
+        "tier": "Nominal tier (for reference only)",
         "query_format": "Query format", "n_docs": "Documents sampled",
         "B": "Draws", "delta_full": "Full-sample dMRR@10",
         "correct": "Draws with correct sign", "p_correct": "Agreement rate",
         "ci_lo": "Wilson lower", "ci_hi": "Wilson upper"})
-    d = d.sort_values(["Corpus", "Nominal tier", "Configuration",
+    d = d.sort_values(["Corpus", "contributes to", "Configuration",
                        "Query format", "Documents sampled"])
     for c in ["Full-sample dMRR@10","Agreement rate","Wilson lower","Wilson upper"]:
         d[c] = d[c].round(4)
     d.to_csv(OUT / "appendix3_screen_resampling.csv", index=False)
-    lag = d[(d["Nominal tier"] == 1) & (d["Documents sampled"] == 75)] \
+    lag = d[(d["contributes to"] == "specificity") & (d["Documents sampled"] == 75)] \
         .groupby(["Corpus", "Configuration"])["Agreement rate"].mean()
     print(f"A3  {len(d)} rows | worst tier-1 agreement at n=75: "
           f"{lag.min():.3f} ({lag.idxmin()})")
@@ -355,13 +372,25 @@ def appendix4():
 def appendix5():
     """Master parameter table + epsilon sweep. Sources stated per parameter."""
     P = [
-        ("d_ben", "Mean dMRR@10, benefited subgroup", "+0.0627", "per-condition SD 0.0465",
-         "unitless", "Companion study, full-corpus protocol at eps=1e-5", "empirical", "technical effect"),
-        ("d_harm", "Mean dMRR@10, harmed subgroup", "-0.0867", "per-condition SD 0.0465",
-         "unitless", "Companion study, full-corpus protocol at eps=1e-5", "empirical", "technical effect"),
-        ("p", "Affected-subgroup prevalence", "partially identified",
-         "0.036-1.000 (no assumptions)", "proportion",
-         "55-system extraction frame; Appendix 1", "partially identified", "technical effect"),
+        ("d_ben", "Mean dMRR@10, response-defined benefited group (6 configurations)",
+         "+0.075745", "SE 0.0259 across configurations", "unitless",
+         "Companion study, full-corpus protocol at eps=1e-5; grouped by measured "
+         "sign, not nominal tier", "empirical", "technical effect"),
+        ("d_harm", "Mean dMRR@10, response-defined harmed group (7 configurations)",
+         "-0.076593", "SE 0.0131 across configurations", "unitless",
+         "Companion study, full-corpus protocol at eps=1e-5; grouped by measured "
+         "sign, not nominal tier", "empirical", "technical effect"),
+        ("p*", "Universal-deployment threshold", "0.50",
+         "0.32-0.70 across the regularisation sweep (structural, "
+         "not a sampling interval)", "proportion",
+         "Derived from d_ben, d_harm, K/M", "derived", "threshold"),
+        ("r", "M_ben / M_harm, relative downstream translation", "1.0",
+         "0.25 to 4 in structural sensitivity", "ratio",
+         "No published source; r=1 is an assumption", "ILLUSTRATIVE", "structural"),
+        ("p", "Response-defined benefited-state prevalence", "not estimated",
+         "0-1 with no classification assumption", "proportion",
+         "55-system extraction frame; Appendix 1",
+         "unidentified without classification assumptions", "technical effect"),
         ("se", "Screen sensitivity", "derived", "by n scored conditions/documents",
          "proportion", "Between-condition variability; resampling, Appendix 3",
          "empirical", "technical effect"),
@@ -409,17 +438,19 @@ def appendix5():
         OUT / "appendix5_parameters.csv", index=False)
 
     e = pd.read_parquet(U / "epsilon_sensitivity.parquet")
-    T1 = TIER1
-    e["tier"] = np.where(e.model.isin(T1), 1, 2)
-    sw = e.groupby(["epsilon", "tier"])["delta_MRR@10"].mean().unstack()
-    sw.columns = ["d_harm (tier 1)", "d_ben (tier 2)"]
-    sw["p*"] = sw["d_harm (tier 1)"].abs() / (
-        sw["d_ben (tier 2)"] + sw["d_harm (tier 1)"].abs())
-    sw = sw.reset_index()
-    sw["epsilon"] = sw["epsilon"].map(lambda x: f"{x:.0e}")
-    for c in sw.columns:
-        if c != "epsilon":
-            sw[c] = sw[c].round(4)
+    # Groups are RESPONSE-DEFINED at each epsilon: a configuration is harmed if
+    # its measured mean effect is negative there. Grouping by nominal tier is
+    # superseded and produced p* > 1 at eps=1e-7, which is not a probability.
+    rows = []
+    for eps, g in e.groupby("epsilon"):
+        pm = g.groupby("model")["delta_MRR@10"].mean()
+        b, h = pm[pm > 0], pm[pm < 0]
+        db, dh = b.mean(), h.mean()
+        rows.append(dict(epsilon=f"{eps:.0e}",
+                         n_benefited=len(b), n_harmed=len(h),
+                         d_ben=round(db, 6), d_harm=round(dh, 6),
+                         p_star=round(abs(dh) / (db + abs(dh)), 4)))
+    sw = pd.DataFrame(rows)
     sw.to_csv(OUT / "appendix5_epsilon_sweep.csv", index=False)
     e.rename(columns={"delta_MRR@10": "dMRR@10"}).to_csv(
         OUT / "appendix5_epsilon_percondition.csv", index=False)
