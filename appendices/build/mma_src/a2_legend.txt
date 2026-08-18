@@ -1,0 +1,39 @@
+## Column definitions
+| column | definition |
+| Corpus | er_reason (UCSF) or mimic_discharge (BIDMC) |
+| Document variant | hpi = presenting-narrative section (primary analysis); full512 = whole note with all configurations capped at 512 tokens (sensitivity analysis) |
+| Query format | nl = natural language; keyword = keyword |
+| Configuration | embedding configuration as specified in the panel |
+| Nominal tier | 1 = nominal harm tier; 2 = nominal benefit tier |
+| Max tokens | sequence length used for that variant |
+| Baseline MRR@10 | mean reciprocal rank at cutoff 10 before correction |
+| Corrected MRR@10 | mean reciprocal rank at cutoff 10 after corpus-only whitening at epsilon = 1e-5 |
+| dMRR@10 | corrected minus baseline |
+| nominal subgroup | harmed or benefited, from the nominal tier |
+| retains assignment | whether the measured sign matches the nominal tier |
+| benchmark response group | harmed or benefited, from the sign of the configuration's mean effect on the derivation corpora; differs from nominal tier for E5-Mistral-7B-ablation |
+| agrees with benchmark response group | whether the measured sign matches that group |
+
+Nominal agreement is 52 of 52 on section-level text and 47 of 52 under whole-note encoding at matched context length. Benchmark-response agreement is 48 of 52 on section-level text; the difference is E5-Mistral-7B-ablation, which is harmed on the benchmark corpora and benefited in all four institutional conditions.
+
+## Corpus construction
+Sources were ER-Reason v1.0.0, UCSF emergency-department provider notes, and MIMIC-IV-Note v2.2, BIDMC discharge summaries. Both are PhysioNet credentialed-access resources and note text is not redistributed here.
+
+One hundred documents were sampled per corpus at random seed 42, without replacement, from documents of at least 400 characters. Sampling was unstratified because the six derivation conditions are unstratified, and any change in the screening curve could not otherwise be attributed to the corpora rather than to the sampling.
+
+Median document length was 6,741 characters for ER-Reason and 9,774 characters for MIMIC-IV-Note, against approximately 400 tokens in the benchmark set.
+
+## Section extraction
+The presenting narrative was identified by header. Extraction succeeded on 100 of 100 documents in both corpora, but the header vocabulary differs between them.
+- MIMIC-IV-Note: "Brief Hospital Course" or "History of Present Illness".
+- ER-Reason: "History of Present Illness" appears in only 4 of 200 sampled notes, so matching required "HISTORY" with a whitespace boundary.
+Median extract length was 694 characters for ER-Reason and 1,269 characters for MIMIC-IV-Note. Both are length-comparable to the benchmark corpora and are encoded whole by every configuration in the panel.
+
+Seven of 100 ER-Reason extracts retain a leading form-field label. This is a corpus property affecting document text only, never queries, and a constant present in 7 of 100 documents contributes negligibly to the document covariance on which the transform is fitted.
+
+The same clinical section, differently labelled in two corpora and requiring different extraction patterns, is a small instance of the paper's own argument that preprocessing does not transport without local inspection.
+
+## Why a section extract is the primary analysis
+The panel's maximum sequence length is not uniform, and the non-uniformity aligns with nominal tier: all six nominal harm-tier configurations are BERT-scale at 512 tokens, while all four decoder configurations, all in the nominal benefit tier, accept 2,048 or 4,096. Encoding whole notes at native limits would give one group entire documents and the other a fifth of each, advantaging the benefit tier for reasons unrelated to whitening. The section extract is encoded whole by every configuration, so that asymmetry is absent. The whole-note sensitivity analysis caps all configurations at 512 tokens, which removes the asymmetry differently and is reported as full512.
+
+Native-limit encoding was not run: it confounds context window with subgroup, and its result would not be interpretable.

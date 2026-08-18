@@ -1,0 +1,21 @@
+## Scope of these codings
+Every coding in this frame is MECHANISTIC: it records an implementation characteristic expected to correspond to the response-defined subgroup of the decision model, not a measured response to the intervention. No system in the frame was evaluated under the intervention. The counts therefore support proxy-based partial identification under stated classification assumptions; they do not bound response-defined prevalence, which is unidentified without such an assumption.
+
+## Mechanistic affected criterion
+A system is coded as meeting the hypothesised affected mechanism only where both of the following hold.
+- The representation actually used for retrieval can be established from the primary article.
+- That representation was not shown to have been calibrated by the model's training objective.
+Systems whose extraction step cannot be established from the primary article are coded UNKNOWN, not unaffected. One of 55 systems meets this mechanistic criterion. Because no system in the frame was evaluated under the intervention, that count does not bound response-defined prevalence; it enters the analysis only under explicit classification assumptions.
+
+## Reported pooling
+None of the 55 systems reports a retrieval pooling strategy as such. One system (A50) reports enough implementation detail elsewhere in its methods to infer the extraction step; the inference, its basis, and the primary-source location are recorded in their own columns.
+
+## Coding stability
+A50 is Tier 2 in the core, expanded and adversarial frames. The source workbook additionally flagged it ambiguous under the original rationale, namely that no similarity-tuned checkpoint was identified. The manuscript establishes that this rationale is invalid, because citing a base-model paper does not establish the absence of a similarity-tuned checkpoint. Under the extracted-representation basis the coding is not ambiguous. Both the superseded rationale and the current basis are recorded so that the change is auditable.
+
+## Interface class
+| interface class | meaning |
+| commercial interface | pooling is vendor-fixed and the geometry is undisclosed |
+| self-hosted checkpoint | the checkpoint is identified and inspectable |
+| checkpoint unspecified | no identifiable checkpoint is named |
+| not a pooled dense retriever | corpus-only whitening is undefined for the system |
