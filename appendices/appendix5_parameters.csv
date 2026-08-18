@@ -1,7 +1,9 @@
 Symbol,Definition,Base value,Distribution or range,Units,Source,Status,Enters
-d_ben,"Mean dMRR@10, benefited subgroup",+0.0627,per-condition SD 0.0465,unitless,"Companion study, full-corpus protocol at eps=1e-5",empirical,technical effect
-d_harm,"Mean dMRR@10, harmed subgroup",-0.0867,per-condition SD 0.0465,unitless,"Companion study, full-corpus protocol at eps=1e-5",empirical,technical effect
-p,Affected-subgroup prevalence,partially identified,0.036-1.000 (no assumptions),proportion,55-system extraction frame; Appendix 1,partially identified,technical effect
+d_ben,"Mean dMRR@10, response-defined benefited group (6 configurations)",+0.075745,SE 0.0259 across configurations,unitless,"Companion study, full-corpus protocol at eps=1e-5; grouped by measured sign, not nominal tier",empirical,technical effect
+d_harm,"Mean dMRR@10, response-defined harmed group (7 configurations)",-0.076593,SE 0.0131 across configurations,unitless,"Companion study, full-corpus protocol at eps=1e-5; grouped by measured sign, not nominal tier",empirical,technical effect
+p*,Universal-deployment threshold,0.50,"0.32-0.70 across the regularisation sweep (structural, not a sampling interval)",proportion,"Derived from d_ben, d_harm, K/M",derived,threshold
+r,"M_ben / M_harm, relative downstream translation",1.0,0.25 to 4 in structural sensitivity,ratio,No published source; r=1 is an assumption,ILLUSTRATIVE,structural
+p,Response-defined benefited-state prevalence,not estimated,0-1 with no classification assumption,proportion,55-system extraction frame; Appendix 1,unidentified without classification assumptions,technical effect
 se,Screen sensitivity,derived,by n scored conditions/documents,proportion,"Between-condition variability; resampling, Appendix 3",empirical,technical effect
 sp,Screen specificity,derived,by n scored conditions/documents,proportion,"Between-condition variability; resampling, Appendix 3",empirical,technical effect
 alpha,Technical metric to decision accuracy,0.70,"TruncN(0.70, 0.15)",unitless,No published source,ILLUSTRATIVE,enters M

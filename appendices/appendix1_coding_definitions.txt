@@ -23,8 +23,7 @@ Mechanistic affected criterion
   this mechanistic criterion. No system in the frame was evaluated
   under the intervention, so the count does not bound response-defined
   prevalence. It enters the analysis only under explicit
-  classification assumptions and, separately, as a labelled
-  stress-test value.
+  classification assumptions.
 
 Reported pooling
   None of the 55 systems reports a retrieval pooling strategy as such.

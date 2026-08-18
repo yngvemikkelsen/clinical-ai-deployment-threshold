@@ -1,0 +1,148 @@
+MULTIMEDIA APPENDIX 4 (part 2)
+Query-generation protocol for the external corpora
+================================================================
+
+Both external corpora are PhysioNet credentialed-access resources under data use
+agreements that preclude transmission to a commercial API. The metadata-derived
+query protocol of the derivation study was therefore executed locally. This file
+records the protocol verbatim so the substitution and its consequences are
+auditable. The paired configuration-by-format comparisons against the published
+query set are in appendix4_query_generator.csv.
+
+----------------------------------------------------------------
+1. MODEL AND SAMPLING PARAMETERS
+----------------------------------------------------------------
+
+Generating model      qwen2.5:14b-instruct, served locally via Ollama
+Temperature           0.0 for metadata extraction, 0.3 for query generation
+Token budget          300 extraction, 150 natural language, 60 keyword
+Retries               3, exponential backoff
+Extraction window     first 6000 characters of the note
+Structured output     JSON mode enabled for the extraction stage
+Reasoning suppressed  think=False
+
+A larger local model (qwen3:30b) was tried first and rejected. It emits reasoning
+regardless of /no_think or think=False; the reasoning consumed the token budget
+before any answer, and every extracted field returned "Unknown". This is recorded
+because the failure is silent: the pipeline completes and writes output.
+
+----------------------------------------------------------------
+2. TWO-STAGE STRUCTURE
+----------------------------------------------------------------
+
+Stage 1 extracts structured metadata from the note text. Stage 2 receives ONLY
+that metadata and never the document text, by design, to limit lexical leakage
+from document into query. Stage 1 runs on the full note for both document
+variants, so the query set is identical across variants and only the documents
+differ.
+
+----------------------------------------------------------------
+3. PROMPTS, VERBATIM
+----------------------------------------------------------------
+
+STAGE 1 - metadata extraction
+
+    Extract metadata from this clinical note. Return ONLY a JSON object with
+    exactly these keys:
+    "specialty", "note_type", "primary_diagnosis", "secondary_diagnoses",
+    "age", "sex"
+    Use "Unknown" for any field not stated. "secondary_diagnoses" must be a
+    list of strings.
+    No prose, no code fences, JSON only.
+
+    NOTE:
+    [NOTE TEXT]
+
+    JSON:
+
+STAGE 2a - natural-language query (rendered with example values)
+
+    Based ONLY on this metadata, write a natural language clinical question
+    (1-2 sentences):
+    Specialty: Emergency Medicine | Note type: ED Provider Note |
+    Diagnosis: Hypoxia | Other: COPD | Patient: adult Female
+    Use ONLY the values given. Do not infer, add, or invent any detail not
+    present above, including age.
+    Query:
+
+STAGE 2b - keyword query (rendered with example values)
+
+    Based ONLY on this metadata, output 3-6 clinical search keywords
+    (space-separated):
+    Specialty: Emergency Medicine | Note type: ED Provider Note |
+    Diagnosis: Hypoxia | Other: COPD | Patient: adult Female
+    Use ONLY the values given. Do not infer, add, or invent any detail not
+    present above, including age.
+    Keywords:
+
+The two instruction lines and the metadata field line are reproduced verbatim
+from the derivation study's protocol. The sentence beginning "Use ONLY the values
+given" is the single added instruction and is discussed in section 4.
+
+----------------------------------------------------------------
+4. DEVIATIONS FROM THE PUBLISHED PROTOCOL
+----------------------------------------------------------------
+
+Four, all forced, all stated rather than absorbed.
+
+(a) MODEL SUBSTITUTION. Required by the data use agreements. Bounded by the
+    comparison in appendix4_query_generator.csv.
+
+(b) JSON MODE on the extraction stage. Without it, prose leaks into the
+    structured output and parsing fails.
+
+(c) NO-INVENTION INSTRUCTION plus demographics normalisation. Without both, the
+    substituted model supplied plausible patient ages absent from the metadata
+    ("Female" became "a 45-year-old female"), breaching the protocol's guarantee
+    that queries derive only from extracted fields. A missing age is normalised
+    to the protocol's own 'adult' default rather than to a number, so no digit is
+    available for the model to anchor on. With both measures, invented ages fell
+    to 2 of 100 (ER-Reason) and 1 of 100 (MIMIC-IV-Note).
+
+(d) OUTPUT CLEANING. Truncation at the first non-Latin character, because the
+    substituted model occasionally breaks into another language mid-generation;
+    removal of underscores; and dropping a trailing incomplete sentence rather
+    than emitting a fragment.
+
+----------------------------------------------------------------
+5. OUTPUT CHARACTERISTICS
+----------------------------------------------------------------
+
+                                ER-Reason    MIMIC-IV-Note    MTSamples
+JSON parsed                      100/100        100/100        100/100
+Primary diagnosis "Unknown"        0/100          0/100          4/100
+Natural-language length (median) 270 chars      281 chars      173 chars
+Keyword count (median)                 6              6              6
+Invented ages                      2/100          1/100          0/100
+Non-ASCII in keyword output            0              0              0
+
+----------------------------------------------------------------
+6. GROUNDING CHECK
+----------------------------------------------------------------
+
+For ER-Reason, extracted primary diagnoses were compared against the corpus
+registry diagnosis field, which the extraction stage never sees. Token overlap
+was 45 of 100. Disagreements were inspected and reflected presentation-versus-
+final-diagnosis differences and vocabulary differences, not fabrication:
+
+  extracted: "acute abdominal pain, concern for pyelonephritis or
+              intra-abdominal process"
+  registry:  "complicated urinary tract infection"
+
+  extracted: "dermatomal vesicular rash, suspected shingles"
+  registry:  "ophthalmic herpes zoster"
+
+For MIMIC-IV-Note the corresponding field is the note's own description line, and
+overlap was 73 of 100. The check is reported, not enforced: a low overlap does
+not indicate extraction failure when the note records presentation and the
+registry records a coded final diagnosis.
+
+----------------------------------------------------------------
+7. SCOPE OF THE SUBSTITUTION BOUND
+----------------------------------------------------------------
+
+The comparison in appendix4_query_generator.csv was run on MTSamples, a public
+corpus for which the derivation study's published queries exist. It bounds the
+substitution where both query sets can be compared. It cannot establish that the
+external result is unchanged by the substitution, because no published queries
+exist for the credentialed corpora - which is why the substitution was necessary.
