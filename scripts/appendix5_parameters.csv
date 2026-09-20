@@ -1,0 +1,23 @@
+Symbol,Definition,Base value,Distribution or range,Units,Source,Status,Enters
+d_ben,"Mean dMRR@10, response-defined benefited group (6 configurations)",+0.075745,SE 0.0259 across configurations,unitless,"Companion study, full-corpus protocol at eps=1e-5; grouped by measured sign, not nominal tier",empirical,technical effect
+d_harm,"Mean dMRR@10, response-defined harmed group (7 configurations)",-0.076593,SE 0.0131 across configurations,unitless,"Companion study, full-corpus protocol at eps=1e-5; grouped by measured sign, not nominal tier",empirical,technical effect
+p*,Universal-deployment threshold,0.50,"0.32-0.70 across the regularisation sweep (structural, not a sampling interval)",proportion,"Derived from d_ben, d_harm, K/M",derived,threshold
+r,"M_ben / M_harm, relative downstream translation",1.0,0.25 to 4 in structural sensitivity,ratio,No published source; r=1 is an assumption,ILLUSTRATIVE,structural
+p,Response-defined benefited-state prevalence,not estimated,0-1 with no classification assumption,proportion,55-system extraction frame; Appendix 1,unidentified without classification assumptions,technical effect
+se,Screen sensitivity,derived,derived separately by scored-condition breadth and by document-resampling design,proportion,"Between-condition variability; resampling, Appendix 3",empirical,technical effect
+sp,Screen specificity,derived,derived separately by scored-condition breadth and by document-resampling design,proportion,"Between-condition variability; resampling, Appendix 3",empirical,technical effect
+alpha,Technical metric to decision accuracy,0.70,"TruncN(0.70, 0.15)",unitless,No published source,ILLUSTRATIVE,enters M
+adoption,Retrieval output adopted into decision,0.60,"Beta(9, 6)",proportion,No published source,ILLUSTRATIVE,enters M
+p_event,Adverse event | adopted erroneous retrieval,0.12,"Beta(6, 44)",proportion,No published source,ILLUSTRATIVE,enters M
+C_event,Treatment cost per adverse event,"EUR 11,494","Gamma(2.5, 4597)",EUR,"SAMDATA 2024 bed-day NOK 26,153 x 5.11 excess days (Hoogervorst-Schilp 2015) = NOK 133,642, converted at FX. Exceeds the European estimates of Durand 2024 (EUR 6,000-10,000 per hospitalisation) and Laroche 2025 (EUR 5,974 mean, EUR 618-27,380, 2023 tariffs); both are carried in the cost sensitivity analysis, across which the threshold is unchanged at 0.50",empirical,enters M via V
+Q_event,Utility loss per adverse event,0.0015 QALY,"Gamma(1.5, 0.001); 0.028 alternative",QALY,Disutility 0.09-0.145 applied over the 5.11-day excess stay; Kirwan 2023 alternative,scenario,enters M via V
+lambda,Willingness to pay,"NOK 275,000","to NOK 825,000 severity-weighted",NOK/QALY,Meld. St. 34 (2015-2016). Applied at nominal policy value without indexation; the Norwegian Directorate for Medical Products reviewed the thresholds in 2026 and recommended no interim adjustment,empirical,enters M via V
+FX,Exchange rate,11.6276,fixed,NOK/EUR,"Norges Bank annual average for 2024, the price year of the SAMDATA bed-day estimate; accessed September 19, 2026",empirical,enters M via V
+N,Annual retrievals,"133,000",fixed,count,"approximately 1/20 of 2,656,857 Norwegian somatic specialist patients (2024, Statistics Norway)",empirical,enters M
+D,"Discount factor, 5 years at 4%",4.4518,fixed,unitless,Standard,empirical,enters M
+K_impl,Implementation cost,EUR 800,"Gamma(2, 400)",EUR,Scenario,scenario,enters K
+K_annual,Annual maintenance,EUR 150,"Gamma(1.5, 100)",EUR,Scenario,scenario,enters K
+K_screen,Screening cost per condition,EUR 400 x n_cond,"Gamma(2, 200 x n_cond)",EUR,Scenario,scenario,enters K
+S,Fixed screening cost,EUR 400 x n_cond,= K_screen,EUR,"Incurred whichever way the screen reads; EUR 1,600 at n_cond = 4",scenario,enters the screening threshold as s = S/M
+T,Deployment cost,"EUR 1,468",K_impl + K_annual x D,EUR,"Incurred only on the systems the screen selects, at a rate that depends on the site prior probability of benefit. S and T are carried separately rather than combined into a single screen-and-treat cost, because combining them would require assuming a value for p",scenario,enters the screening threshold as t = T/M
+epsilon,ZCA regularisation,1e-5,1e-7 to 1e-2 swept,unitless,Companion study default,empirical,technical effect

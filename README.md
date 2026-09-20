@@ -1,198 +1,107 @@
-# Clinical AI Deployment Threshold
+# Paper 9 — JMIR AI ms#109863, major revision package
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21965903.svg)](https://doi.org/10.5281/zenodo.21990809)
+Everything here is regenerated against the revised manuscript and verified.
+`scripts/qc_manuscript.py` is the release gate: it recomputes every
+load-bearing number from source and fails on any disagreement.
 
-Replication materials for:
+## Contents
 
-**Mikkelsen Y. Deployment-Specific Benefit and Harm in Clinical Artificial
-Intelligence: Decision-Analytic Derivation and Multi-Institutional Evaluation of
-a Deployment Threshold. 2026.**
+paper9_ms109863_rev1.docx        revised manuscript (clean copy for upload)
+paper9_response_to_editor.txt    point-by-point response; plain text, for
+                                 pasting into the notification field
 
-## Overview
+appendices/
+  MMA1_system_extraction_frame.docx
+  MMA2_transport_matrix.docx
+  MMA3_screen_resampling.docx
+  MMA4_query_generation.docx
+  MMA5_decision_model_parameters.docx   UPDATED
+  MMA6_codesearch_replication.docx
+  MMA7_CHEERS2022_checklist.docx
+  MMA8_CHEERS-AI_checklist.docx         UPDATED
+  MMA9_sensitivity_analyses.docx        NEW
 
-Clinical AI operates in a health-care environment heterogeneous in biology,
-clinical practice, treatment effects, and documentation. Where an intervention's
-effect changes sign across settings, its benefit–harm balance is
-deployment-specific, and the variable that determines which side a given
-deployment falls on is a property of the deployed system rather than of the
-patient population.
+figures/   600 dpi PNG for upload, PDF as the vector original
+  fig1_rev20260919.png / .pdf           REGENERATED
+  fig2_rev20260919.png / .pdf           REGENERATED
+  fig3_rev20260919.png                  unchanged
 
-This repository contains the decision model, the empirical work, and the
-analysis code behind three claims:
+scripts/
+  clinical_ai_deployment_model.py   canonical model; stdlib only; self-verifying
+  paper9_sensitivity.py             economic sensitivities -> Tables S6-S10
+  paper9_boundary_sweep.py          classification boundary -> Table S11
+  make_figures.py                   Figures 1-3; imports the canonical model
+  make_appendices.py                appendix generation
+  qc_manuscript.py                  release gate, 71 checks; exits 0 on the
+                                    current package
+  docx2csv.py                       extracts appendix tables for QC
+  appendix5_parameters.csv          regenerated parameter table
 
-1. **A deployment threshold.** An intervention with sign-changing effects is
-   beneficial across a setting only where affected-subgroup prevalence exceeds
-   p\* = (|d_harm| + K/M) / (d_ben + |d_harm|). Empirically K/M = 4.3 × 10⁻⁶, so
-   the threshold is indistinguishable from its zero-cost limit. Groups are defined
-   by measured response, giving p* = 0.50.
+## What changed in this revision
 
-3. **Published evidence cannot establish whether the condition is met.** No
-   system in a 55-system extraction frame had been evaluated under the
-   intervention, so the affected fraction is identified only under explicit
-   classification assumptions. Under no assumption the bound is the trivial
-   interval 0–1.
+MMA5   C_event EUR 11,422 -> EUR 11,494 with the conversion stated; the
+       "reported without reconciliation" note replaced by the actual
+       comparison with Durand 2024 and Laroche 2025; lambda annotated as
+       nominal and unindexed; per-condition values rounded to 4 decimals.
+MMA2   Header-frequency denominator removed rather than guessed; the
+       unquantified "contributes negligibly" covariance claim replaced by what
+       was actually done.
+MMA9   NEW. Tables S6-S11: the economic and classification sensitivity
+       analyses. Built as its own appendix rather than appended to MMA5,
+       because the wide tables need their own page setup.
+PSA    The adverse-event cost Gamma scale was a stale literal (4569) against
+       a declared mean implying 4597. It is now derived as C_EVENT/2.5, so
+       the declared and sampled means cannot diverge. Corrected M range:
+       EUR 38.3M to 1,131.8M.
+FX     The 2026 year-to-date rate is removed. An incomplete year has no
+       annual average, and the figure could not be sourced. The sensitivity
+       now uses the completed 2024 and 2025 averages only.
+Tbl 6  The minimum-prior-probability column is removed: those values used
+       the zero-cost form with institutional magnitudes, and the document
+       axis carries no condition count, so no exact value exists per row.
+MMA8   AI 10 no longer claims the resampling establishes a minimum
+       measurement intensity, which the revision explicitly rejects.
+Fig 1  right-hand box now reads "documents in joint fit/evaluation sample
+       per condition"; boxes resized so the text fits.
+Fig 2  y-axis "minimum prior probability of benefit"; panel B x-axis
+       "documents in joint fit/evaluation sample"; the external curve now
+       uses the same exact S/T equation as the benchmark curve with the
+       institutional effect magnitudes.
+Model  the legacy prevalence prior, EVPI/EVPPI and "hard minimum four
+       conditions" are gone; the screening threshold carries S and T
+       separately rather than folding an assumed prevalence into one cost.
 
-4. **Local screening has two independent requirements.** Cross-condition
-   evidence breadth sets the prevalence a site must be able to assert, falling
-   from 0.210 at one scored condition to 0.071 at six. Within-site sample size
-   sets whether the screen is reliable at all: specificity was 0.328 at ten
-   documents, so a site more often concludes that a harmed system benefits.
+## Reproducing
 
-## Repository structure
+    cd scripts
+    python3 clinical_ai_deployment_model.py          # base case + verification
+    python3 paper9_sensitivity.py                    # Tables S6-S10
+    python3 paper9_boundary_sweep.py                 # Table S11
+    python3 make_figures.py                          # Figures 1-3
+    python3 qc_manuscript.py --md ms.md --docx ../paper9_ms109863_rev1.docx
 
-```
-.
-├── model/
-│   └── clinical_rag_he_model_v5.py     decision model, PSA, EVPI/EVPPI
-├── experiments/
-│   ├── transport/                      multi-institutional evaluation
-│   │   ├── expA_01_sample.py           corpus sampling
-│   │   ├── expA_01b_variants.py        section extraction, document variants
-│   │   ├── expA_02_queries_v2.py       local metadata-derived query generation
-│   │   ├── expA_04_panel.py            13-configuration panel, ZCA, MRR@10
-│   │   ├── expA_05_curve.py            screening curve, held-out and pooled
-│   │   ├── expA_06_bootstrap.py        local-screen resampling
-│   │   └── expA_07_bridge.py           query-generator bridging check
-│   └── replication/                    code-search boundary test
-│       ├── paper9_expB_diera.py        replication driver
-│       └── paper9_expB_colab.py        fine-tuning and embedding extraction
-├── analysis/
-│   ├── make_appendices.py              generates all six appendices
-│   ├── make_figures.py                 generates figures 1-3
-│   ├── qc_manuscript.py                numerical consistency check
-│   └── fix_workbook_a50.py             extraction-frame coding correction
-├── appendices/                         multimedia appendices 1-6
-├── figures/                            figures 1-3, PNG and vector PDF
-├── frame/                              55-system extraction frame
-├── results/                            aggregate outputs, no patient data
-├── README.md
-└── LICENSE
-```
+The model and boundary sweep need only the standard library; the
+sensitivity script needs numpy and scipy; the figures need matplotlib and
+pandas; the QC script needs pandas.
 
-## Data availability
+## One open item, for the author
 
-**No patient-level data are redistributed.** The two external corpora are
-PhysioNet credentialed-access resources and must be obtained directly:
+Reference 27 (Siverskog) is an applied economic evaluation reporting EVPI,
+not a methodological authority for value-of-information analysis. Either
+soften the sentence to "is used in health economic evaluation" or add a
+standard methodological source. This is a citation-quality judgement, not a
+factual error.
 
-| Corpus | Source | Access |
-|---|---|---|
-| MIMIC-IV-Note v2.2 | Beth Israel Deaconess Medical Center | PhysioNet, credentialed |
-| ER-Reason v1.0.0 | University of California San Francisco | PhysioNet, credentialed |
+MMA2's header-frequency sentence previously read "4 of 200 sampled notes"
+against an analytic sample of 100 per corpus. Rather than guess a denominator,
+the count is removed and the sentence now reads "a small minority of the
+sampled notes". If a separate 200-note header-discovery set does exist, put
+the exact figure back and say which set it refers to.
 
-`results/` contains aggregate outputs only: effect sizes, retrieval metrics,
-resampling counts, and threshold derivations. Sampled note text, generated
-queries derived from those notes, and document embeddings are **not** included,
-as all three are derivative of credentialed data.
+## Known validator notes
 
-Two files in `results/` are outputs of the companion study rather than of this
-one, reproduced here so the screening derivation can be run without a second
-download: `epsilon_sensitivity.parquet` (regularisation sweep, per-condition
-effect estimates) and `cross_validation.parquet` (cross-validated protocol
-output). Both originate in Mikkelsen Y, *JMIR Med Inform* 2026;14:e99639
-(doi:10.2196/99639). 
-
-## Reproducing key results
-
-### Decision model, thresholds, and value of information
-
-```
-pip install numpy scipy pandas
-python model/clinical_rag_he_model_v5.py
-```
-
-Expected: p\* = 0.5805 (zero-cost) and 0.580536 (exact); partial expected value
-of perfect information below €0.01 for every parameter entering M and for K;
-robustness across the regularisation sweep, screening design, and prior
-scenarios.
-
-### Screening curve and design table
-
-```
-python experiments/transport/expA_05_curve.py \
-    --p12 results/epsilon_sensitivity.parquet \
-    --expa results/expA_panel_results.csv
-```
-
-### Local-screen resampling
-
-```
-python experiments/transport/expA_06_bootstrap.py --emb <embedding dir>
-```
-
-Requires cached embeddings, which are not redistributed. Run
-`expA_04_panel.py --variant hpi --cache-embeddings` first, having obtained the
-corpora from PhysioNet.
-
-Expected: specificity 0.328 at ten documents rising to 0.974 at 75; net effect
-negative at every sample size examined at the documented mechanistic fraction.
-
-### Code-search boundary replication
-
-```
-git clone https://github.com/drndr/code_isotropy.git
-python experiments/replication/paper9_expB_diera.py evaluate --all
-```
-
-Expected: baselines reproduce published values to within 0.001 across 18 of 18
-primary cells; the sign structure does not reproduce at zero regularisation.
-
-### Appendices, figures, and consistency check
-
-```
-python analysis/make_appendices.py
-python analysis/make_figures.py
-python analysis/qc_manuscript.py --md <manuscript>.md
-```
-
-`qc_manuscript.py` recomputes every load-bearing number in the manuscript from
-its source artefact and fails on any mismatch or on any superseded value
-reappearing. It does not check whether a claim is warranted by its evidence,
-only whether the numbers agree.
-
-## Notes on the extraction frame
-
-`frame/p_tier2_wide_frame_extraction_audit_v2.xlsx` supersedes an earlier
-version. One system's audit note recorded a coding rationale that the analysis
-established was invalid; the corrected note states the basis actually supported
-by the primary article, and a `Coding provenance` column records the superseded
-rationale so the change is auditable. Tier codings are unchanged in all frames.
-
-Every coding in the frame is **mechanistic**: it records an implementation
-characteristic expected to correspond to the response-defined subgroup, not a
-measured response. No system in the frame was evaluated under the intervention.
-The counts therefore support proxy-based partial identification under stated
-assumptions and do not bound response-defined prevalence.
-
-## Citation
-
-```
-@article{mikkelsen2026deployment,
-  title={Deployment-Specific Benefit and Harm in Clinical Artificial
-         Intelligence: Decision-Analytic Derivation and Multi-Institutional
-         Evaluation of a Deployment Threshold},
-  author={Mikkelsen, Yngve},
-  year={2026}
-}
-```
-
-## Related work
-
-This repository is one component of a programme on retrieval failure in clinical
-AI:
-
-- Mikkelsen Y. Clinical Context Variables Collectively Rival Model Choice in
-  Embedding-Based Retrieval. *JMIR Med Inform.* 2026;14:e94241.
-  [Repository](https://github.com/yngvemikkelsen/clinical-rag-retrieval-benchmark)
-- Mikkelsen Y. Effects of Model Choice, Corpus Context, and Post Hoc Correction on Layer-Level Embedding Degradation in Clinical Document Retrieval: Experimental Study. *JMIR Med Inform.* 2026;14:e99639.[Repository](https://github.com/yngvemikkelsen/clinical-embedding-layer-analysis)
-
-## License
-
-Code: MIT License. Aggregate results: CC BY 4.0. No patient-level data are
-included; corpus access is governed by the respective PhysioNet data use
-agreements.
-
-## Contact
-
-Yngve Mikkelsen, MD MSc DBA
-
-ORCID: 0000-0003-1543-3805
+MMA9 is generated by pandoc. A strict OOXML validator reports four cosmetic
+complaints about pandoc's own default style definitions and one about
+settings.xml. Word and LibreOffice both open and render the file correctly;
+the content, tables and page setup are unaffected. Every other appendix
+validates cleanly.
