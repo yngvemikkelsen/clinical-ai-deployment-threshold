@@ -1,5 +1,5 @@
 # Clinical AI Deployment Threshold
-![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21990809.svg)](https://doi.org/10.5281/zenodo.21990809)
+![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21965902.svg)](https://doi.org/10.5281/zenodo.21965902)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 Replication materials for:
 
