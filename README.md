@@ -1,6 +1,8 @@
 # Clinical AI Deployment Threshold
-![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21965902.svg)](https://doi.org/10.5281/zenodo.21965902)
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21965902.svg)](https://doi.org/10.5281/zenodo.21965902)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Replication materials for:
 
 **Mikkelsen Y. Deployment-Specific Benefit and Harm in Clinical Artificial
@@ -81,6 +83,7 @@ disagree for one configuration, and that disagreement moves the threshold; see
 ├── frame/                               55-system extraction frame
 ├── results/                             aggregate outputs, no patient data
 ├── CHANGELOG_v1.1.0.md
+├── CHANGELOG_v1.2.0.md
 ├── README.md
 └── LICENSE
 ```
@@ -212,6 +215,8 @@ assumptions and do not bound response-defined prevalence.
 
 ## Citation
 
+Cite the article:
+
 ```
 @article{mikkelsen2026deployment,
   title={Deployment-Specific Benefit and Harm in Clinical Artificial
@@ -221,6 +226,22 @@ assumptions and do not bound response-defined prevalence.
   year={2026}
 }
 ```
+
+and the archived code and data:
+
+```
+@software{mikkelsen2026threshold_code,
+  title={clinical-ai-deployment-threshold},
+  author={Mikkelsen, Yngve},
+  year={2026},
+  publisher={Zenodo},
+  doi={10.5281/zenodo.21965902},
+  url={https://doi.org/10.5281/zenodo.21965902}
+}
+```
+
+The DOI above resolves to the most recent release. Each release also has its
+own version DOI, listed on the Zenodo record.
 
 ## Related work
 
