@@ -1,5 +1,5 @@
 # Clinical AI Deployment Threshold
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21990809.svg)](https://doi.org/10.5281/zenodo.21990809)
 Replication materials for:
 
 **Mikkelsen Y. Deployment-Specific Benefit and Harm in Clinical Artificial
