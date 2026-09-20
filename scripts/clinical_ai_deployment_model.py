@@ -146,7 +146,10 @@ BASE_EFFECTS = {
     "Phi-3-mini":             (+0.039134, 0.106232),
 }
 
-DEFAULT_PERCONDITION = "appendix5_epsilon_percondition.csv"
+# Repo layout: this script lives in scripts/, the data in appendices/.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_PERCONDITION = os.path.join(
+    _HERE, os.pardir, "appendices", "appendix5_epsilon_percondition.csv")
 
 # Values as printed in the manuscript, checked on every run.
 EXPECTED = {
