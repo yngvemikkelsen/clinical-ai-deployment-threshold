@@ -23,8 +23,15 @@ const {
   PageOrientation
 } = d;
 
-const APP = 'appendices';
-const OUT = '/mnt/user-data/outputs/multimedia_appendices';
+// Paths resolve against the repository root, derived from this file's own
+// location, so the build runs from any working directory. Previously APP was
+// relative to the caller's cwd while mma_src was relative to build/, so there
+// was no directory the script could actually be run from, and OUT was an
+// absolute path that existed only on the authoring machine.
+const ROOT = path.resolve(__dirname, '..');
+const APP = path.join(ROOT, 'appendices');
+const SRC = path.join(__dirname, 'mma_src');
+const OUT = process.env.PAPER9_MMA_OUT || path.join(ROOT, 'build', 'out');
 fs.mkdirSync(OUT, { recursive: true });
 
 // US Letter in DXA (1440 = 1 inch)
@@ -104,7 +111,7 @@ function tableFrom(rows, usable, fontSize) {
 // and no wrapped line can be misread as a heading or a list item.
 function legendBlocks(file, usable, tableScale) {
   if (tableScale === undefined) tableScale = 0.72;
-  const fp = path.join('mma_src', file);
+  const fp = path.join(SRC, file);
   if (!fs.existsSync(fp)) return [];
   const lines = fs.readFileSync(fp, 'utf8').split('\n');
   const out = [];
@@ -202,89 +209,92 @@ const pick = names => {
 };
 
 const mma1 = build('Multimedia_Appendix_1.docx', true, u => [
-  title('Multimedia Appendix 1. System extraction frame and coding definitions'),
-  caption('All 55 clinical retrieval-augmented generation systems, deduplicated from two systematic reviews. Tables 1.1 to 1.4 present the same 55 systems and summary counts from four complementary angles: what each reports, what could be inferred and on what evidence, how each is classified under the four prespecified classification assumptions, and the distribution of interface classes across the frame.'),
+  title('System extraction frame and coding definitions'),
+  caption('All 55 clinical retrieval-augmented generation systems, deduplicated from two systematic reviews. Tables S1 to S4 present the same 55 systems and summary counts from four complementary angles: what each reports, what could be inferred and on what evidence, how each is classified under the four prespecified classification assumptions, and the distribution of interface classes across the frame.'),
   ...legendBlocks('a1_definitions.txt', u),
-  tableTitle('Table 1.1. Reported implementation characteristics'),
+  tableTitle('Table S1. Reported implementation characteristics'),
   tableFrom(pick(['Canonical ID', 'System', 'Source frame',
                   'Reported operational encoder/retriever', 'Interface class',
                   'Reported pooling']), u, 15),
-  tableTitle('Table 1.2. Inferred extraction and the evidence for it'),
+  tableTitle('Table S2. Inferred extraction and the evidence for it'),
   tableFrom(pick(['Canonical ID', 'Inferred extraction/representation',
                   'Basis for inference', 'Primary-source evidence',
                   'Extraction step established', 'Coding stability',
                   'Superseded coding rationale']), u, 14),
-  tableTitle('Table 1.3. Classification under each prespecified assumption'),
+  tableTitle('Table S3. Classification under each prespecified assumption'),
   tableFrom(pick(['Canonical ID', 'Confirmed affected', 'Confidence',
                   'Rung 1: no assumptions',
                   'Rung 2: contrastive training implies non-membership',
                   'Rung 3: vendor claims accepted',
                   'Rung 4: non-dense excluded']), u, 15),
-  tableTitle('Table 1.4. Interface class counts'),
+  tableTitle('Table S4. Interface class counts'),
   tableFrom(parseCsv('appendix1_summary.csv'), Math.round(u * 0.5), 18),
 ]);
 
 // ------------------------------------------------------------------ MMA 2
 const mma2 = build('Multimedia_Appendix_2.docx', true, u => [
-  title('Multimedia Appendix 2. Corpus construction, section extraction, and the complete transport matrix'),
+  title('Corpus construction, section extraction, and the complete transport matrix'),
   caption('Baseline, corrected, and change in mean reciprocal rank at cutoff 10 for every configuration, corpus, query format, and document variant, with nominal and benchmark-response subgroup assignment.'),
   ...legendBlocks('a2_legend.txt', u),
-  tableTitle('Table 2.1. Cell-level transport matrix'),
+  tableTitle('Table S1. Cell-level transport matrix'),
   tableFrom(parseCsv('appendix2_transport_matrix.csv'), u, 15),
 ]);
 
 // ------------------------------------------------------------------ MMA 3
 const mma3 = build('Multimedia_Appendix_3.docx', true, u => [
-  title('Multimedia Appendix 3. Local-screen resampling results'),
+  title('Local-screen resampling results'),
   caption('Sign-agreement rates by configuration, corpus, query format, and document sample size. The reference sign is the configuration\u2019s full-sample measured effect on that corpus. Intervals are Wilson intervals on the resampling proportion and quantify Monte Carlo precision for these corpora, not spread across sites: the 500 draws are overlapping subsamples of two fixed 100-document corpora, not independent deployment environments. Sample size refers to a joint fit-and-evaluation sample, so the transform-fitting and effect-estimation requirements are not separately identified.'),
-  tableTitle('Table 3.1. Resampling agreement by sample size'),
+  tableTitle('Table S1. Resampling agreement by sample size'),
   tableFrom(parseCsv('appendix3_screen_resampling.csv'), u, 14),
 ]);
 
 // ------------------------------------------------------------------ MMA 4
 const mma4 = build('Multimedia_Appendix_4.docx', true, u => [
-  title('Multimedia Appendix 4. Query-generation robustness and the full generation protocol'),
+  title('Query-generation robustness and the full generation protocol'),
   caption('Paired comparisons under the published and locally generated query sets on the derivation study\u2019s own MTSamples sample, holding documents, configurations and all other settings constant, followed by the generation protocol verbatim.'),
-  tableTitle('Table 4.1. Paired comparison of query sets'),
+  tableTitle('Table S1. Paired comparison of query sets'),
   tableFrom(parseCsv('appendix4_query_generator.csv'), u, 15),
   ...legendBlocks('a4_protocol.txt', u),
 ]);
 
 // ------------------------------------------------------------------ MMA 5
 const mma5 = build('Multimedia_Appendix_5.docx', true, u => [
-  title('Multimedia Appendix 5. Decision-model parameters, regularisation sweep, and per-condition effects'),
+  title('Decision-model parameters, regularisation sweep, and per-condition effects'),
   caption('Every parameter with its value, distribution or range, source, and whether it is empirical, scenario-based, or illustrative; the regularisation sweep with response-defined grouping at each value; and the per-condition effect estimates from which the group means are computed.'),
-  tableTitle('Table 5.1. Model parameters'),
+  tableTitle('Table S1. Model parameters'),
   tableFrom(parseCsv('appendix5_parameters.csv'), u, 15),
-  tableTitle('Table 5.2. Regularisation sweep under response-defined grouping'),
+  tableTitle('Table S2. Regularisation sweep under response-defined grouping'),
   caption('Group membership is determined at each value by the sign of the measured mean effect, so group sizes change across the sweep. This is the structural sensitivity reported in place of a sampling interval on the threshold.'),
   tableFrom(parseCsv('appendix5_epsilon_sweep.csv'), Math.round(u * 0.8), 17),
-  tableTitle('Table 5.3. Per-condition effect estimates'),
+  tableTitle('Table S3. Per-condition effect estimates'),
   tableFrom(parseCsv('appendix5_epsilon_percondition.csv'), u, 14),
 ]);
 
 // ------------------------------------------------------------------ MMA 6
 const mma6 = build('Multimedia_Appendix_6.docx', true, u => [
-  title('Multimedia Appendix 6. Code-search boundary replication'),
-  caption('Replication of the published semantic code-search experiment from the authors\u2019 released code and data, undertaken to test whether the sign-changing antecedent holds in a domain sharing no models, corpora or evaluation conventions with clinical retrieval. Baseline retrieval reproduced the published values to within 0.001 across all 18 primary cells; the reported subgroup sign structure did not reproduce, and the generality claim is withdrawn rather than supported.'),
-  tableTitle('Table 6.1. Baseline replication against published values'),
+  title('Code-search boundary replication'),
+  caption('Replication of the published semantic code-search experiment from the authors\u2019 released code and data, undertaken to test whether the sign-changing antecedent holds in a domain sharing no models, corpora or evaluation conventions with clinical retrieval. Baseline retrieval reproduced the published values to within 0.001 across the 18 released-checkpoint cells. Response-defined groups are present at low regularisation and absent above it, and the published mechanistic grouping does not reproduce; the generality claim is withdrawn rather than supported.'),
+  caption('Configuration keys: codebert = CodeBERT; codebert_ft = fine-tuned CodeBERT, contrastively trained; codet5p = CodeT5+; codellama = Code Llama. Languages are the six CodeSearchNet languages of the published primary grid, plus R, an extension outside that grid.'),
+  tableTitle('Table S1. Baseline replication against published values'),
   tableFrom(parseCsv('appendix6_baseline_replication.csv'), Math.round(u * 0.85), 17),
-  tableTitle('Table 6.2. Whitening effects by configuration and language'),
+  caption('Note. The published-baseline criterion applies to released checkpoints. The published fine-tuned CodeBERT checkpoint was not released, so that configuration was fine-tuned here with the authors\u2019 released script at their published settings (InfoNCE, learning rate 5e-5, batch size 32, five epochs); the resulting model exceeds the published baseline in all six languages, by 0.013 to 0.177 MRR, and baseline agreement is therefore not an applicable criterion for it. Across the 18 released-checkpoint cells the largest deviation is 0.0010. Of the three extension-language cells, CodeBERT and Code Llama on R reproduce within 0.01 through the same pipeline and corpus, while CodeT5+ on R gives 0.405 against a published 0.045; that cell is reported and carries no claim, and excluding it does not change the regularisation value at which CodeT5+ changes sign.'),
+  tableTitle('Table S2. Whitening effects by configuration and language'),
   tableFrom(parseCsv('appendix6_codesearch_full.csv'), u, 15),
-  tableTitle('Table 6.3. Regularisation grid'),
+  tableTitle('Table S3. Regularisation grid'),
   tableFrom(parseCsv('appendix6_epsilon_grid.csv'), Math.round(u * 0.85), 17),
+  caption('Note. At zero regularisation three configuration means are positive and CodeT5+ is negative, so response-defined groups are both defined. Fine-tuned CodeBERT remains positive at every tested regularisation value, whereas CodeT5+ crosses from negative to positive between 0.001 and 0.01; above that the harmed group is empty and no threshold is defined.'),
 ]);
 
 // ------------------------------------------------------------------ MMA 7
 const mma7 = build('Multimedia_Appendix_7.docx', true, u => [
-  title('Multimedia Appendix 7. Completed CHEERS 2022 checklist'),
+  title('Completed CHEERS 2022 checklist'),
   caption('Consolidated Health Economic Evaluation Reporting Standards 2022, all 28 items, with reported status and the manuscript location of each.'),
   ...legendBlocks('a7_cheers2022.txt', u, 1.0),
 ]);
 
 // ------------------------------------------------------------------ MMA 8
 const mma8 = build('Multimedia_Appendix_8.docx', true, u => [
-  title('Multimedia Appendix 8. Completed CHEERS-AI checklist'),
+  title('Completed CHEERS-AI checklist'),
   caption('Consolidated Health Economic Evaluation Reporting Standards for Interventions That Use Artificial Intelligence: the 28 CHEERS 2022 items with 8 AI-specific elaborations, plus the 10 AI extension items, with reported status and manuscript location of each.'),
   ...legendBlocks('a8_cheersai.txt', u, 1.0),
 ]);

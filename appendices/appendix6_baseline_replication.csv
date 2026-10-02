@@ -1,19 +1,28 @@
 Configuration,Language,Baseline MRR,Published baseline,Absolute difference,Analysis
-codebert,ruby,0.0068,0.006,0.0007999999999999995,primary baseline replication (3 model families x 6 languages)
-codebert,javascript,0.0026,0.002,0.0005999999999999998,primary baseline replication (3 model families x 6 languages)
-codebert,go,0.0024,0.002,0.00039999999999999975,primary baseline replication (3 model families x 6 languages)
-codebert,java,0.0009,0.0,0.0009,primary baseline replication (3 model families x 6 languages)
-codebert,python,0.001,0.001,0.0,primary baseline replication (3 model families x 6 languages)
-codebert,php,0.0006,0.0,0.0006,primary baseline replication (3 model families x 6 languages)
-codet5p,ruby,0.706,0.705,0.0010000000000000009,primary baseline replication (3 model families x 6 languages)
-codet5p,javascript,0.6384,0.638,0.00039999999999995595,primary baseline replication (3 model families x 6 languages)
-codet5p,go,0.7579,0.757,0.0009000000000000119,primary baseline replication (3 model families x 6 languages)
-codet5p,java,0.5951,0.595,9.999999999998899e-05,primary baseline replication (3 model families x 6 languages)
-codet5p,python,0.7219,0.721,0.0009000000000000119,primary baseline replication (3 model families x 6 languages)
-codet5p,php,0.5371,0.537,9.999999999998899e-05,primary baseline replication (3 model families x 6 languages)
-codellama,ruby,0.0479,0.047,0.000899999999999998,primary baseline replication (3 model families x 6 languages)
-codellama,javascript,0.0262,0.026,0.00020000000000000226,primary baseline replication (3 model families x 6 languages)
-codellama,go,0.0314,0.031,0.0003999999999999976,primary baseline replication (3 model families x 6 languages)
-codellama,java,0.0159,0.015,0.0009000000000000015,primary baseline replication (3 model families x 6 languages)
-codellama,python,0.0172,0.017,0.0001999999999999988,primary baseline replication (3 model families x 6 languages)
-codellama,php,0.0097,0.009,0.000700000000000001,primary baseline replication (3 model families x 6 languages)
+codebert,ruby,0.0068,0.006,0.0008,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codebert,javascript,0.0026,0.002,0.0006,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codebert,go,0.0024,0.002,0.0004,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codebert,java,0.0009,0.0,0.0009,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codebert,python,0.001,0.001,0.0,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codebert,php,0.0006,0.0,0.0006,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codebert,r,0.0172,0.011,0.0062,"extension language, outside the published primary grid"
+codebert_ft,ruby,0.5996,0.547,0.0526,independent reimplementation (published checkpoint not released)
+codebert_ft,javascript,0.5188,0.427,0.0918,independent reimplementation (published checkpoint not released)
+codebert_ft,go,0.6315,0.619,0.0125,independent reimplementation (published checkpoint not released)
+codebert_ft,java,0.4643,0.395,0.0693,independent reimplementation (published checkpoint not released)
+codebert_ft,python,0.5975,0.5,0.0975,independent reimplementation (published checkpoint not released)
+codebert_ft,php,0.4254,0.248,0.1774,independent reimplementation (published checkpoint not released)
+codet5p,ruby,0.706,0.705,0.001,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codet5p,javascript,0.6384,0.638,0.0004,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codet5p,go,0.7579,0.757,0.0009,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codet5p,java,0.5951,0.595,0.0001,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codet5p,python,0.7219,0.721,0.0009,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codet5p,php,0.5371,0.537,0.0001,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codet5p,r,0.405,0.045,0.36,"extension language, outside the published primary grid"
+codellama,ruby,0.0479,0.047,0.0009,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codellama,javascript,0.0262,0.026,0.0002,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codellama,go,0.0314,0.031,0.0004,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codellama,java,0.0159,0.015,0.0009,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codellama,python,0.0172,0.017,0.0002,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codellama,php,0.0097,0.009,0.0007,"primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+codellama,r,0.016,0.024,0.008,"extension language, outside the published primary grid"

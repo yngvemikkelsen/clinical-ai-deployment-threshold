@@ -99,7 +99,7 @@ Four, all forced, all stated rather than absorbed.
     available for the model to anchor on. With both measures, invented ages fell
     to 2 of 100 (ER-Reason) and 1 of 100 (MIMIC-IV-Note).
 
-(d) OUTPUT CLEANING. Truncation at the first non-Latin character, because the
+(d) OUTPUT CLEANING. Truncation at the first non-ASCII character, because the
     substituted model occasionally breaks into another language mid-generation;
     removal of underscores; and dropping a trailing incomplete sentence rather
     than emitting a fragment.

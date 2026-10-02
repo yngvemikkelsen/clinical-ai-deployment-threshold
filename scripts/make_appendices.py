@@ -490,8 +490,11 @@ def appendix6():
     for c in ["Baseline MRR", "Whitened MRR", "dMRR"]:
         d[c] = d[c].round(4)
     # The full grid is broader than the 18-cell primary replication: it adds
-    # the fine-tuned CodeBERT configuration, for which no published baseline
-    # exists, and the seventh language (R, StatCodeSearch). Labelled so the
+    # the fine-tuned CodeBERT configuration and the seventh language (R,
+    # StatCodeSearch). Published baselines DO exist for both - Diera Table 2
+    # gives fine-tuned CodeBERT for all six CodeSearchNet languages and R for
+    # the three released checkpoints - so both are carried into the baseline
+    # comparison below and labelled, rather than dropped. Labelled here so the
     # dimensions can be reconciled with the manuscript.
     d["Analysis"] = np.where(
         (d.Configuration == "codebert_ft") | (d.Language == "r"),
@@ -501,28 +504,53 @@ def appendix6():
 
     base = d[d.Epsilon == 0.0][["Configuration", "Language", "Baseline MRR"]] \
         .drop_duplicates()
+    # Diera Table 2, complete. Transcribed from the published table, including
+    # the fine-tuned CodeBERT row and the R column.
     pub = {("codebert","ruby"):0.006,("codebert","javascript"):0.002,
            ("codebert","go"):0.002,("codebert","java"):0.000,
            ("codebert","python"):0.001,("codebert","php"):0.000,
+           ("codebert","r"):0.011,
+           ("codebert_ft","ruby"):0.547,("codebert_ft","javascript"):0.427,
+           ("codebert_ft","go"):0.619,("codebert_ft","java"):0.395,
+           ("codebert_ft","python"):0.500,("codebert_ft","php"):0.248,
            ("codet5p","ruby"):0.705,("codet5p","javascript"):0.638,
            ("codet5p","go"):0.757,("codet5p","java"):0.595,
            ("codet5p","python"):0.721,("codet5p","php"):0.537,
+           ("codet5p","r"):0.045,
            ("codellama","ruby"):0.047,("codellama","javascript"):0.026,
            ("codellama","go"):0.031,("codellama","java"):0.015,
-           ("codellama","python"):0.017,("codellama","php"):0.009}
+           ("codellama","python"):0.017,("codellama","php"):0.009,
+           ("codellama","r"):0.024}
     base["Published baseline"] = [
         pub.get((r.Configuration, r.Language), np.nan) for r in base.itertuples()]
     base["Absolute difference"] = (
-        base["Baseline MRR"] - base["Published baseline"]).abs()
+        base["Baseline MRR"] - base["Published baseline"]).abs().round(4)
+
+    # Gate scope. The published-baseline criterion is meaningful only where a
+    # checkpoint was released. codebert_ft was fine-tuned locally with the
+    # authors' own script at their published settings because their checkpoint
+    # was not released, and R sits outside their primary grid. Both are
+    # reported with their deviations and labelled, not silently dropped.
+    def _scope(cfg, lang):
+        if cfg == "codebert_ft":
+            return "independent reimplementation (published checkpoint not released)"
+        if lang == "r":
+            return "extension language, outside the published primary grid"
+        return "primary baseline replication (released checkpoints, 6 CodeSearchNet languages)"
+
     prim = base.dropna(subset=["Published baseline"]).copy()
-    prim["Analysis"] = "primary baseline replication (3 model families x 6 languages)"
+    prim["Analysis"] = [_scope(r.Configuration, r.Language) for r in prim.itertuples()]
     prim.to_csv(OUT / "appendix6_baseline_replication.csv", index=False)
 
     grid = d.groupby(["Configuration", "Epsilon"])["dMRR"].mean().unstack()
     grid.reset_index().to_csv(OUT / "appendix6_epsilon_grid.csv", index=False)
     n = base.dropna(subset=["Published baseline"])
-    print(f"A6  {len(d)} rows | {len(n)} baseline cells, max deviation "
-          f"{n['Absolute difference'].max():.4f}")
+    gated = prim[prim.Analysis.str.startswith("primary baseline replication")]
+    print(f"A6  {len(d)} rows | {len(n)} baseline cells with published values")
+    print(f"    gated (released checkpoints, 6 languages): {len(gated)} cells, "
+          f"max deviation {gated['Absolute difference'].max():.4f}")
+    print(f"    not gated: {len(prim) - len(gated)} cells, max deviation "
+          f"{prim[~prim.index.isin(gated.index)]['Absolute difference'].max():.4f}")
     print(f"    epsilon grid {grid.shape[0]} configurations x {grid.shape[1]} values")
 
 

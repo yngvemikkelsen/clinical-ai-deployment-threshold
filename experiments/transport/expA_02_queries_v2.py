@@ -23,9 +23,15 @@ DEVIATIONS FROM APPENDIX 1, ALL FORCED, ALL DELIBERATE
    supplies a plausible age that was never in the metadata ("Female" -> "A
    45-year-old female"), breaking the protocol's guarantee that queries derive
    only from extracted metadata.
-4. Output cleaning: truncate at the first non-Latin character (qwen2.5
+4. Output cleaning: truncate at the first NON-ASCII character (qwen2.5
    occasionally breaks into Chinese mid-generation), drop underscores, drop a
-   trailing incomplete sentence rather than emitting a fragment.
+   trailing incomplete sentence rather than emitting a fragment. The implemented
+   test is re.search(r"[^\x00-\x7F]", s): non-ASCII, not non-Latin. Cleaning is
+   applied inline at generation and only the cleaned strings are written, so raw
+   pre-truncation generations are NOT retained and the frequency and content of
+   truncation events cannot be recovered after the fact. Generation also runs at
+   temperature 0.3 with no seed set, so a re-run does not reproduce the original
+   outputs.
 
 Step 3 bridges the combined effect against the published GPT-4o queries on a
 public corpus.
@@ -63,6 +69,11 @@ import requests
 MODEL = "qwen2.5:14b-instruct"
 OLLAMA = "http://localhost:11434/api/generate"
 TEMP_EXTRACT, TEMP_QUERY = 0.0, 0.3
+
+# The implemented truncation criterion: NON-ASCII, not non-Latin. Defined once
+# so the cleaner and the post-clean check cannot drift apart, and kept out of
+# any f-string expression so the file parses on Python 3.11 as well as 3.12.
+NON_ASCII = r"[^\x00-\x7F]"
 NUM_PREDICT_EXTRACT, NUM_PREDICT_NL, NUM_PREDICT_KW = 300, 150, 60
 RETRIES = 3
 EXTRACT_CHARS = 6000
@@ -169,7 +180,7 @@ def extract_metadata(text: str, note_type_hint: str) -> dict:
 def clean_query(s: str, keyword: bool) -> str:
     s = strip_think(s)
     # qwen2.5 occasionally breaks into Chinese mid-generation
-    m = re.search(r"[^\x00-\x7F]", s)
+    m = re.search(NON_ASCII, s)
     if m:
         s = s[:m.start()]
     s = s.replace("_", " ")
@@ -240,7 +251,11 @@ def run(corpus: str, limit=None, probe=False):
               if (mm := re.search(r"(\d+)-year-old", str(x.query_nl)))
               and mm.group(1) not in str(x.md_demographics))
     print(f"  invented ages      : {inv}/{len(q)}  (want 0)")
-    print(f"  non-ASCII in kw    : {q.query_keyword.str.contains(r'[^\x00-\x7F]').sum()}")
+    # Post-clean assertion only: clean_query truncates at the first non-ASCII
+    # character, so this is 0 by construction. It confirms the rule fired; it is
+    # NOT a count of how often it fired, which would need the raw generations.
+    n_nonascii = q.query_keyword.str.contains(NON_ASCII).sum()
+    print(f"  non-ASCII in kw    : {n_nonascii}  (post-clean check, 0 by construction)")
 
     reg = q[q.registry_diagnosis.notna() & (q.registry_diagnosis != "") &
             (q.registry_diagnosis != "Unknown")]

@@ -26,10 +26,10 @@ Median document length was 6,741 characters for ER-Reason and 9,774 characters f
 ## Section extraction
 The presenting narrative was identified by header. Extraction succeeded on 100 of 100 documents in both corpora, but the header vocabulary differs between them.
 - MIMIC-IV-Note: "Brief Hospital Course" or "History of Present Illness".
-- ER-Reason: "History of Present Illness" appears in only 4 of 200 sampled notes, so matching required "HISTORY" with a whitespace boundary.
+- ER-Reason: "History of Present Illness" appears in only a small minority of the sampled notes, so matching required "HISTORY" with a whitespace boundary.
 Median extract length was 694 characters for ER-Reason and 1,269 characters for MIMIC-IV-Note. Both are length-comparable to the benchmark corpora and are encoded whole by every configuration in the panel.
 
-Seven of 100 ER-Reason extracts retain a leading form-field label. This is a corpus property affecting document text only, never queries, and a constant present in 7 of 100 documents contributes negligibly to the document covariance on which the transform is fitted.
+Seven of 100 ER-Reason extracts retain a leading form-field label. The label was retained as part of the source document text and was therefore present identically for all evaluated configurations. It affects document text only, never queries; its contribution to the document covariance on which the transform is fitted was not quantified.
 
 The same clinical section, differently labelled in two corpora and requiring different extraction patterns, is a small instance of the paper's own argument that preprocessing does not transport without local inspection.
 

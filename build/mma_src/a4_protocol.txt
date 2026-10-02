@@ -3,6 +3,7 @@ Both external corpora are PhysioNet credentialed-access resources under data use
 | setting | value |
 | generating model | qwen2.5:14b-instruct, served locally via Ollama |
 | temperature | 0.0 for metadata extraction; 0.3 for query generation |
+| random seed | none set; generation is not reproducible run to run |
 | token budget | 300 extraction; 150 natural language; 60 keyword |
 | retries | 3, with exponential backoff |
 | extraction window | first 6,000 characters of the note |
@@ -31,7 +32,7 @@ Four deviations were required. All are forced by the data governance constraint 
 - Model substitution, required by the data use agreements, and bounded by the paired comparison in Table 4.1.
 - JSON mode on the extraction stage, without which prose leaks into the structured output and parsing fails.
 - A no-invention instruction plus demographics normalisation. Without both, the substituted model supplied plausible patient ages absent from the metadata, so that "Female" became "a 45-year-old female", breaching the protocol's guarantee that queries derive only from extracted fields. A missing age is normalised to the protocol's own "adult" default rather than to a number, so no digit is available for the model to anchor on. With both measures, invented ages fell to 2 of 100 for ER-Reason and 1 of 100 for MIMIC-IV-Note.
-- Output cleaning: truncation at the first non-Latin character, because the substituted model occasionally breaks into another language mid-generation; removal of underscores; and dropping a trailing incomplete sentence rather than emitting a fragment.
+- Output cleaning: truncation at the first non-ASCII character, implemented as re.search(r"[^\x00-\x7F]", s), because the substituted model occasionally breaks into another language mid-generation; removal of underscores; and dropping a trailing incomplete sentence rather than emitting a fragment. Cleaning is applied inline during generation and only the cleaned strings are written, so raw pre-truncation generations were not retained and the frequency and content of truncation events cannot be reconstructed.
 
 ## Output characteristics
 | measure | ER-Reason | MIMIC-IV-Note | MTSamples |
@@ -40,7 +41,6 @@ Four deviations were required. All are forced by the data governance constraint 
 | natural-language length, median | 270 characters | 281 characters | 173 characters |
 | keyword count, median | 6 | 6 | 6 |
 | invented ages | 2/100 | 1/100 | 0/100 |
-| non-ASCII in keyword output | 0 | 0 | 0 |
 
 ## Grounding check
 For ER-Reason, extracted primary diagnoses were compared against the corpus registry diagnosis field, which the extraction stage never sees. Token overlap was 45 of 100. Disagreements were inspected and reflected presentation-versus-final-diagnosis differences and vocabulary differences, not fabrication. Two examples follow.

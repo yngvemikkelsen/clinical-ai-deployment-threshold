@@ -244,8 +244,11 @@ def report(df):
         print(f"{c:<18}{v:<9}{f:<9}{t1.mean():>+12.4f}{t2.mean():>+12.4f}"
               f"{str(bool((t1 < 0).all())):>10}{str(bool((t2 > 0).all())):>10}"
               f"{ps:>9.4f}")
-    print("\n  Paper 12 benchmark, full-corpus fit at the same epsilon:")
-    print("    d_harm -0.0867  d_ben +0.0627  p* 0.5816")
+    print("\n  Paper 12 benchmark, full-corpus fit at the same epsilon,")
+    print("  grouped by NOMINAL TIER to match the panel above:")
+    print("    d_harm -0.0867  d_ben +0.0627  p* 0.5805")
+    print("  This is the nominal-tier comparator, not the paper's threshold.")
+    print("  The manuscript groups by measured sign and reports p* = 0.5028.")
     print("\n  't1 all<0' and 't2 all>0' are the two-tier structure. Experiment B")
     print("  found it does NOT replicate under independent fine-tuning in code")
     print("  search. If it also fails here, tier membership is neither model-")
